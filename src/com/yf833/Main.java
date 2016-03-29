@@ -6,9 +6,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.io.File;
 
@@ -20,8 +17,10 @@ public class Main {
     private static float f_param;       // -f (probability of tails)
 
     private static ArrayList<Page> pages;
-    private static int n;
+    private static int n = 0;
     private static float epsilon;
+    private static float sum_base = 0;
+    private static float weights[][];
 
 
     public static void main(String[] args) throws IOException {
@@ -31,6 +30,24 @@ public class Main {
 
         //store docs as page objects in pages array
         pages = processInputPages(input_path);
+
+
+
+        ///// (1) Initialize epsilon, base scores, base score sums /////
+
+        epsilon = (float) 0.01/n;
+        // System.out.println("EPSILON: " + epsilon);
+
+        for(Page p : pages){ sum_base += p.base; }
+        //System.out.println("SUM OF BASE SCORES: " + sum_base);
+
+        
+
+        ///// (2) Initialize link weights for outlinks of all pages /////
+        weights = new float[n][n];
+
+
+
         System.out.println(pages.toString());
 
 
@@ -60,12 +77,16 @@ public class Main {
                     p.outlinks.add(link.attr("href").replaceFirst("[.][^.]+$", ""));
                 }
 
-                // get the document's wordcount
+                // get the document's wordcount and initialize its base val
                 p.wordcount = doc.text().split(" +").length;
+                p.base = (float) (Math.log(p.wordcount) / Math.log(2));
+
 
                 // store page object in page array
                 pages.add(p);
 
+                //increment page count
+                n++;
             }
         } else {
             System.out.println(input_path + " is not a valid directory");

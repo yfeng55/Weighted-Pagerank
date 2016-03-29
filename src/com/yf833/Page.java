@@ -26,7 +26,9 @@ public class Page {
 
     public String toString(){
         return this.title + ":" + this.outlinks.toString() + this.wordcount;
+//        return this.title + ":" + this.outlinks.toString() + this.wordcount + ", " + this.base;
     }
+
 
 
 
