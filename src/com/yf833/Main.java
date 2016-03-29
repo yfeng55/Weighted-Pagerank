@@ -33,18 +33,40 @@ public class Main {
 
 
 
-        ///// (1) Initialize epsilon, base scores, base score sums /////
+        ///// (1) Initialize epsilon, base scores, base scores sum, scores /////
 
         epsilon = (float) 0.01/n;
         // System.out.println("EPSILON: " + epsilon);
 
         for(Page p : pages){ sum_base += p.base; }
+        for(Page p : pages){ p.score = p.base / sum_base; }
         //System.out.println("SUM OF BASE SCORES: " + sum_base);
 
-        
+
 
         ///// (2) Initialize link weights for outlinks of all pages /////
         weights = new float[n][n];
+
+        for(int i=0; i<pages.size(); i++){
+            //if page has no outlinks, then assign w[p] a weight of 1/n for all q
+            if(pages.get(i).outlinks.size() == 0){
+                for(int j=0; j<pages.size(); j++){
+                    weights[i][j] = (float) 1.0/n;
+                }
+            }
+            // TODO: compute link weights
+//            else{
+//
+//                for(String l : pages.get(i).outlinks){
+//
+//                }
+//
+//            }
+
+        }
+
+
+
 
 
 
