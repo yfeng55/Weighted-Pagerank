@@ -10,7 +10,7 @@ public class Page {
     public float base;
     public float score;
     public float newscore;
-    public ArrayList<String> outlinks;
+    public ArrayList<Link> outlinks;
 
 
     public Page(String title){
@@ -26,10 +26,21 @@ public class Page {
 
     public String toString(){
 //        return this.title + ":" + this.outlinks.toString() + this.wordcount + "\n";
-        return "\n" + this.title + ":" + this.outlinks.toString() + this.wordcount + ", " + this.score;
+        return "\n" + this.title + ": \t" + this.outlinks.toString() + "\t" + this.wordcount + " | " + this.score;
     }
 
 
+    @Override
+    public boolean equals(Object o)
+    {
+        return this.title.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return title.hashCode();
+    }
 
 
 }

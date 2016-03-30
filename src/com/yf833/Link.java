@@ -12,5 +12,9 @@ public class Link {
         this.to = to;
     }
 
+    public String toString(){
+        return "(" + this.from + ", " + this.to + ")";
+    }
+
 
 }

@@ -8,6 +8,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Hashtable;
 
 public class Main {
 
@@ -20,7 +22,10 @@ public class Main {
     private static int n = 0;
     private static float epsilon;
     private static float sum_base = 0;
+
+    private static Hashtable<String, Integer> lookup = new Hashtable<>();
     private static float weights[][];
+
 
 
     public static void main(String[] args) throws IOException {
@@ -43,25 +48,32 @@ public class Main {
         //System.out.println("SUM OF BASE SCORES: " + sum_base);
 
 
-
         ///// (2) Initialize link weights for outlinks of all pages /////
         weights = new float[n][n];
 
-        for(int i=0; i<pages.size(); i++){
-            //if page has no outlinks, then assign w[p] a weight of 1/n for all q
-            if(pages.get(i).outlinks.size() == 0){
-                for(int j=0; j<pages.size(); j++){
-                    weights[i][j] = (float) 1.0/n;
+        for(Page p : pages){
+
+            // if page has no outlinks, then assign w[p] a weight of 1/n for all q
+            if(p.outlinks.size() == 0){
+                for(int j=0; j<n; j++){
+                    weights[j][lookup.get(p.title)] = (float) 1.0/n;
                 }
             }
-            // TODO: compute link weights
-//            else{
-//
-//                for(String l : pages.get(i).outlinks){
-//
-//                }
-//
-//            }
+
+            // compute link weights
+            else{
+
+                // get unnormalized weights
+                for(Link l : p.outlinks){
+                    weights[lookup.get(l.to)][lookup.get(l.from)] = calculateWeight(l, p);
+                }
+
+                //get sum
+
+
+                //adjust weights to be normalized
+
+            }
 
         }
 
@@ -69,13 +81,27 @@ public class Main {
 
 
 
+        ///// (*) PRINT DEBUGGING INFO /////
 
+//        System.out.println(Arrays.deepToString(weights));
+
+        Util.print2DArray(weights);
         System.out.println(pages.toString());
 
 
 
 
+
     }
+
+
+
+    //TODO: implement calculateWeight()
+    // compute a weight given a link (l) and a page (p)
+    private static int calculateWeight(Link l, Page p){
+        return 1;
+    }
+
 
 
     //count the number of docs there are, initialize an array of Page objects, for each page object compute a wordcount/score
@@ -96,7 +122,7 @@ public class Main {
                 Elements links = doc.select("a[href]");
 
                 for(Element link : links){
-                    p.outlinks.add(link.attr("href").replaceFirst("[.][^.]+$", ""));
+                    p.outlinks.add(new Link(p.title, link.attr("href").replaceFirst("[.][^.]+$", "")));
                 }
 
                 // get the document's wordcount and initialize its base val
@@ -106,6 +132,9 @@ public class Main {
 
                 // store page object in page array
                 pages.add(p);
+
+                // add an index for the page
+                lookup.put(p.title, n);
 
                 //increment page count
                 n++;
